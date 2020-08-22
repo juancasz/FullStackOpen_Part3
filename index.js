@@ -44,26 +44,6 @@ let persons = [
       "name": "Mary Poppendieck",
       "number": "39-23-6423122",
       "id": 4
-    },
-    {
-      "name": "Jhon",
-      "number": "123456",
-      "id": 9
-    },
-    {
-      "name": "Luis",
-      "number": "3333",
-      "id": 10
-    },
-    {
-      "name": "Lenin",
-      "number": "6136297",
-      "id": 11
-    },
-    {
-      "name": "fernando",
-      "number": "66332",
-      "id": 12
     }
 ]
 
@@ -120,7 +100,7 @@ app.post('/api/persons',(req,res)=>{
         name : body.name,
         number : body.number,
        // id : Math.round(Math.random()*10000)
-       id: persons.length
+       id: persons.length+1
     }
 
     persons = persons.concat(person)
