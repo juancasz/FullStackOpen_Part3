@@ -100,7 +100,7 @@ app.post('/api/persons',(req,res)=>{
         name : body.name,
         number : body.number,
        // id : Math.round(Math.random()*10000)
-       id: persons.length+1
+       //id: persons.length+1
     }
 
     persons = persons.concat(person)
