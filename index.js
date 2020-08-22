@@ -125,7 +125,8 @@ app.put('/api/persons/:id',(req,res)=>{
 
   const person ={
       name : body.name,
-      number : body.number
+      number : body.number,
+      id: id
   }
 
   persons = persons.map(p => p.id === id ? person : p )
