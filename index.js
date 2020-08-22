@@ -130,6 +130,7 @@ app.put('/api/persons/:id',(req,res)=>{
   }
 
   persons = persons.map(p => p.id === id ? person : p )
+  console.log(persons)
 
   res.json(persons)
 })
