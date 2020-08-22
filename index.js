@@ -107,6 +107,33 @@ app.post('/api/persons',(req,res)=>{
     res.json(persons)
 })
 
+app.put('/api/persons/:id',(req,res)=>{
+  const body = req.body
+  const id = Number(req.params.id)
+
+  if (!body.name) {
+      return response.status(400).json({ 
+        error: 'name missing' 
+      })
+  }
+
+  if (!body.number) {
+      return response.status(400).json({ 
+        error: 'number missing' 
+      })
+  }
+
+  const person ={
+      name : body.name,
+      number : body.number
+  }
+
+  persons = persons.map(p => p.id === id ? person : p )
+
+  res.json(persons)
+})
+
+
 const PORT = process.env.PORT || 3001
 
 app.listen(PORT, () => {
