@@ -28,32 +28,7 @@ const morganFunction =  (tokens, req, res) => {
 
 app.use(morgan(morganFunction))
 
-/*
-let persons = [
-    {
-      "name": "Arto Hellas",
-      "number": "040-123456",
-      "id": 1
-    },
-    {
-      "name": "Ada Lovelace",
-      "number": "39-44-5323523",
-      "id": 2
-    },
-    {
-      "name": "Dan Abramov",
-      "number": "12-43-234345",
-      "id": 3
-    },
-    {
-      "name": "Mary Poppendieck",
-      "number": "39-23-6423122",
-      "id": 4
-    }
-]
-*/
-
-app.get('/api/persons', (req, res) => {
+app.get('/api/persons', (req, res,next) => {
     Person.find({}).then(persons => {
       res.json(persons)
     })
@@ -65,7 +40,7 @@ app.get('/info', (req, res) => {
     res.send(`Phonebook has info for ${persons.length} people <br><br> ${date}`)
 })
 
-app.get('/api/persons/:id', (request, response) => {
+app.get('/api/persons/:id', (request, response,next) => {
     Person.findById(request.params.id).then(person => {
       if (person) {
         response.json(person.toJSON())
@@ -73,10 +48,11 @@ app.get('/api/persons/:id', (request, response) => {
         response.status(404).end()
       }
     })
+    .catch(error => next(error))
 
 })
 
-app.delete('/api/persons/:id', (request, response) => {
+app.delete('/api/persons/:id', (request, response, next) => {
   Person.findByIdAndRemove(request.params.id)
   .then(result => {
     response.status(204).end()
@@ -84,7 +60,7 @@ app.delete('/api/persons/:id', (request, response) => {
   .catch(error => next(error))
 })
 
-app.post('/api/persons',(req,res)=>{
+app.post('/api/persons',(req,res, next)=>{
     const body = req.body
 
     if (!body.name) {
@@ -119,7 +95,7 @@ app.post('/api/persons',(req,res)=>{
     .catch(error => next(error))
 })
 
-app.put('/api/persons/:id',(req,res)=>{
+app.put('/api/persons/:id',(req,res, next)=>{
   const body = req.body
 
   const person ={
@@ -142,7 +118,7 @@ const errorHandler = (error, request, response, next) => {
   } 
 
   if (error.name === 'ValidationError') {
-    return res.status(400).json({ errorMessage: error.message })
+    return response.status(400).json({ errorMessage: error.message })
   }
 
   next(error)
