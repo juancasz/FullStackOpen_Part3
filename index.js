@@ -1,7 +1,9 @@
+require('dotenv').config()
 const express = require('express')
 const { response } = require('express')
 const app = express()
 const morgan = require('morgan')
+const Person = require('./models/person')
 
 app.use(express.json())
 app.use(express.static('build'))
@@ -24,6 +26,7 @@ const morganFunction =  (tokens, req, res) => {
 
 app.use(morgan(morganFunction))
 
+/*
 let persons = [
     {
       "name": "Arto Hellas",
@@ -46,9 +49,12 @@ let persons = [
       "id": 4
     }
 ]
+*/
 
 app.get('/api/persons', (req, res) => {
-    res.json(persons)
+    Person.find({}).then(persons => {
+      res.json(persons)
+    })
 })
 
 app.get('/info', (req, res) => {
@@ -87,7 +93,7 @@ app.post('/api/persons',(req,res)=>{
           error: 'number missing' 
         })
     }
-
+    /*
     const filterName = persons.filter(person => person.name === body.name)
 
     if(filterName.length > 0){
@@ -95,16 +101,16 @@ app.post('/api/persons',(req,res)=>{
             error: 'name must be unique'
         })
     }
-
-    const person ={
+    */
+    const person =new Person({
         name : body.name,
         number : body.number,
-        id : Math.round(Math.random()*10000)
-    }
+        //id : Math.round(Math.random()*10000)
+    })
 
-    persons = persons.concat(person)
-
-    res.json(persons)
+    person.save().then(savedPerson => {
+      res.json(savedPerson.toJSON())
+    })
 })
 
 app.put('/api/persons/:id',(req,res)=>{
@@ -136,7 +142,7 @@ app.put('/api/persons/:id',(req,res)=>{
 })
 
 
-const PORT = process.env.PORT || 3001
+const PORT = process.env.PORT 
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
