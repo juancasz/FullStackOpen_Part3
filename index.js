@@ -55,6 +55,7 @@ app.get('/api/persons', (req, res) => {
     Person.find({}).then(persons => {
       res.json(persons)
     })
+    .catch(error => next(error))
 })
 
 app.get('/info', (req, res) => {
@@ -63,20 +64,22 @@ app.get('/info', (req, res) => {
 })
 
 app.get('/api/persons/:id', (request, response) => {
-    const id = Number(request.params.id)
-    const person = persons.find(person => person.id === id)
-    if (person) {    
-        response.json(person)  
-    } else {
-        response.status(404).end()  
-    }
+    Person.findById(request.params.id).then(person => {
+      if (person) {
+        response.json(person.toJSON())
+      } else {
+        response.status(404).end()
+      }
+    })
+
 })
 
 app.delete('/api/persons/:id', (request, response) => {
-    const id = Number(request.params.id)
-    persons = persons.filter(person => person.id !== id)
-  
+  Person.findByIdAndRemove(request.params.id)
+  .then(result => {
     response.status(204).end()
+  })
+  .catch(error => next(error))
 })
 
 app.post('/api/persons',(req,res)=>{
@@ -111,35 +114,39 @@ app.post('/api/persons',(req,res)=>{
     person.save().then(savedPerson => {
       res.json(savedPerson.toJSON())
     })
+    .catch(error => next(error))
 })
 
 app.put('/api/persons/:id',(req,res)=>{
   const body = req.body
-  const id = Number(req.params.id)
-
-  if (!body.name) {
-      return response.status(400).json({ 
-        error: 'name missing' 
-      })
-  }
-
-  if (!body.number) {
-      return response.status(400).json({ 
-        error: 'number missing' 
-      })
-  }
 
   const person ={
       name : body.name,
-      number : body.number,
-      id: id
+      number : body.number
   }
 
-  persons = persons.map(p => p.id === id ? person : p )
-  console.log(persons)
-
-  res.json(persons)
+  Person.findByIdAndUpdate(req.params.id, person, {new: true})
+    .then(updatedPerson => {
+      res.json(updatedPerson)
+    })
+    .catch(error => next(error))
 })
+
+const errorHandler = (error, request, response, next) => {
+  console.log(error.message)
+
+  if (error.name === 'CastError' && error.kind === "ObjectId") {
+    return response.status(400).json({ error: 'malformatted id' })
+  } 
+
+  if (error.name === 'ValidationError') {
+    return res.status(400).json({ errorMessage: error.message })
+  }
+
+  next(error)
+}
+
+app.use(errorHandler)
 
 
 const PORT = process.env.PORT 
