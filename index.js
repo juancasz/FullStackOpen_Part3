@@ -37,11 +37,11 @@ app.get('/api/persons', (req, res,next) => {
 
 app.get('/info', (req, res) => {
   const date = new Date()
-  let persons = []
+  let size
   Person.find({}).then(data => {
-    persons = data
+    size = data.length
   })
-  res.send(`Phonebook has info for ${persons.length} people <br><br> ${date}`)
+  res.send(`Phonebook has info for ${size} people <br><br> ${date}`)
 })
 
 app.get('/api/persons/:id', (request, response,next) => {
