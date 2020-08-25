@@ -35,13 +35,12 @@ app.get('/api/persons', (req, res,next) => {
     .catch(error => next(error))
 })
 
-app.get('/info', (req, res) => {
+app.get('/info', (req, res,next) => {
   const date = new Date()
-  let size
   Person.find({}).then(data => {
-    size = data.length
+    res.send(`Phonebook has info for ${data.length} people <br><br> ${date}`)
   })
-  res.send(`Phonebook has info for ${size} people <br><br> ${date}`)
+    .catch(error => next(error))
 })
 
 app.get('/api/persons/:id', (request, response,next) => {
